@@ -1,0 +1,74 @@
+{
+  "name": "mobilestacks",
+  "version": "0.1.3",
+  "description": "Professional Task Runner & CLI for the Stacks Blockchain",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "bin": {
+    "mobilestacks": "dist/src/cli/index.js"
+  },
+  "files": [
+    "dist/",
+    "src/",
+    "contracts/",
+    "Clarinet.toml",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "start": "node ./dist/cli/index.js",
+    "build": "tsc",
+    "lint": "eslint src mobilestacks.config.ts --ext .ts",
+    "test": "vitest run",
+    "setup:simnet": "node scripts/setup-simnet.mjs",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "keywords": [
+    "stacks",
+    "blockchain",
+    "clarity",
+    "smart-contracts",
+    "cli",
+    "task-runner",
+    "web3",
+    "bitcoin"
+  ],
+  "author": "Wizbisy",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Wizbisy/mobilestacks.git"
+  },
+  "homepage": "https://github.com/Wizbisy/mobilestacks#readme",
+  "bugs": {
+    "url": "https://github.com/Wizbisy/mobilestacks/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "@hirosystems/clarinet-sdk": "^3.8.1",
+    "@types/inquirer": "^8.2.6",
+    "@types/node-fetch": "^2.6.13",
+    "@typescript-eslint/eslint-plugin": "^6.20.0",
+    "@typescript-eslint/parser": "^6.20.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-import": "^2.32.0",
+    "vitest": "^4.0.18"
+  },
+  "dependencies": {
+    "@stacks/network": "latest",
+    "@stacks/transactions": "latest",
+    "@stacks/wallet-sdk": "latest",
+    "chalk": "^4.1.2",
+    "commander": "^11.0.0",
+    "dotenv": "^17.3.1",
+    "inquirer": "^8.2.7",
+    "mobilestacks": "^0.1.3",
+    "node-fetch": "^2.7.0",
+    "ts-node": "^10.9.1",
+    "zod": "^3.25.76"
+  }
+}

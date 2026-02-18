@@ -1,0 +1,7 @@
+[project]
+name = "mobilestacks"
+requirements = []
+
+[contracts.sample-contract]
+path = "contracts/sample-contract.clar"
+clarity_version = 1
