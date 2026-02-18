@@ -41,7 +41,7 @@ export async function runInit() {
     },
   ]);
 
-  const config = `export default {\n  networks: {\n    mainnet: { url: '${answers.mainnetUrl}', name: 'mainnet' },\n    testnet: { url: '${answers.testnetUrl}', name: 'testnet' }\n  },\n  defaultNetwork: 'testnet',\n  wallet: {\n    ${answers.privateKey ? `privateKey: '${answers.privateKey}',` : ''}\n    ${answers.seedPhrase ? `seedPhrase: '${answers.seedPhrase}',` : ''}\n    derivationPath: '${answers.derivationPath}'\n  }\n};\n`;
+  const config = `export default {\n  networks: {\n    mainnet: { url: '${answers.mainnetUrl}', name: 'mainnet' },\n    testnet: { url: '${answers.testnetUrl}', name: 'testnet' }\n  },\n  defaultNetwork: 'testnet',\n  wallet: {\n    ${answers.privateKey ? `privateKey: '${answers.privateKey}',` : ''}\n    ${answers.seedPhrase ? `seedPhrase: '${answers.seedPhrase}',` : ''}\n    derivationPath: "${answers.derivationPath}"\n  }\n};\n`;
 
   fs.writeFileSync(path.join(process.cwd(), 'mobilestacks.config.ts'), config);
   // Scaffold example contract
