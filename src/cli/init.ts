@@ -15,13 +15,13 @@ export async function runInit() {
       type: 'input',
       name: 'mainnetUrl',
       message: 'Stacks mainnet node URL:',
-      default: 'https://stacks-node-api.mainnet.stacks.co',
+      default: 'https://api.mainnet.hiro.so',
     },
     {
       type: 'input',
       name: 'testnetUrl',
       message: 'Stacks testnet node URL:',
-      default: 'https://stacks-node-api.testnet.stacks.co',
+      default: 'https://api.testnet.hiro.so',
     },
     {
       type: 'input',
