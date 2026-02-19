@@ -24,7 +24,9 @@ task('deploy-contract', 'Deploy a Clarity smart contract to Stacks blockchain')
     const contractName = args.contractName as string;
     const file = args.file as string;
     const network = args.network as string;
-    const codeBody = fs.readFileSync(file, 'utf8');
+    let codeBody = fs.readFileSync(file, 'utf8');
+    // Strip UTF BOM and non-printable characters (Windows files may include these)
+    codeBody = codeBody.replace(/^\uFEFF/, '').replace(/[^\x20-\x7E\n\r\t]/g, '');
     // Switch network if needed
     if (network === 'mainnet') {
       env.network = createNetwork({ network: 'mainnet', client: { baseUrl: env.config.networks.mainnet.url } });

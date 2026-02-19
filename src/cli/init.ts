@@ -36,15 +36,15 @@ export async function runInit() {
 
 export default {
   networks: {
-    mainnet: { url: process.env.STACKS_MAINNET_URL || '${answers.mainnetUrl}', name: 'mainnet' },
-    testnet: { url: process.env.STACKS_TESTNET_URL || '${answers.testnetUrl}', name: 'testnet' },
+    mainnet: { url: process.env.STACKS_MAINNET_URL || ${JSON.stringify(answers.mainnetUrl)}, name: 'mainnet' },
+    testnet: { url: process.env.STACKS_TESTNET_URL || ${JSON.stringify(answers.testnetUrl)}, name: 'testnet' },
   },
   defaultNetwork: 'testnet',
   wallet: {
     // Secrets are read from environment variables — never hard-code them here.
     privateKey: process.env.MOBILESTACKS_PRIVATE_KEY || '',
     seedPhrase: process.env.MOBILESTACKS_SEED_PHRASE || '',
-    derivationPath: '${answers.derivationPath}',
+    derivationPath: ${JSON.stringify(answers.derivationPath)},
   },
 };
 `;

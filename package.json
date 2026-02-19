@@ -15,7 +15,7 @@
   "scripts": {
     "start": "node ./dist/cli/index.js",
     "build": "tsc",
-    "lint": "eslint src mobilestacks.config.ts --ext .ts",
+    "lint": "eslint src --ext .ts",
     "test": "vitest run",
     "setup:simnet": "node scripts/setup-simnet.mjs",
     "prepublishOnly": "npm run build && npm test"
