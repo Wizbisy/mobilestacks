@@ -1,6 +1,6 @@
 {
   "name": "mobilestacks",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Professional Task Runner & CLI for the Stacks Blockchain",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
@@ -37,7 +37,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Wizbisy/mobilestacks.git"
+    "url": "git+https://github.com/Wizbisy/mobilestacks.git"
   },
   "homepage": "https://github.com/Wizbisy/mobilestacks#readme",
   "bugs": {

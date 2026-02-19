@@ -8,16 +8,14 @@ export const NetworkConfigSchema = z.object({
 });
 
 
-// Wallet config: allow privateKey, seedPhrase, or both. If both, privateKey is used.
+// Wallet config: secrets are resolved at runtime from env vars.
+// Config values are optional fallbacks.
 export const WalletConfigSchema = z.object({
-  privateKey: z.string().min(1, "Private key is required").optional(),
+  privateKey: z.string().optional(),
   seedPhrase: z.string().optional(),
   derivationPath: z.string().optional(),
   address: z.string().optional(),
-}).refine(
-  (data) => data.privateKey || data.seedPhrase,
-  { message: "Either privateKey or seedPhrase is required" }
-);
+});
 
 export const MobilestacksConfigSchema = z.object({
   networks: z.record(NetworkConfigSchema),
