@@ -71,7 +71,7 @@ export default {
   if (!fs.existsSync(tasksDir)) fs.mkdirSync(tasksDir, { recursive: true });
   fs.writeFileSync(
     path.join(tasksDir, 'example-task.ts'),
-    "import { task } from '../core/dsl';\n\ntask('example', 'An example user task for onboarding')\n  .addParam('name', 'Your name', { type: 'string', required: false, defaultValue: 'World' })\n  .setAction(async (args) => {\n    return `Hello, ${args.name}! Welcome to mobilestacks.`;\n  });\n",
+    "import { task } from 'mobilestacks';\n\ntask('example', 'An example user task for onboarding')\n  .addParam('name', 'Your name', { type: 'string', required: false, defaultValue: 'World' })\n  .setAction(async (args: Record<string, string>) => {\n    return `Hello, ${args.name}! Welcome to mobilestacks.`;\n  });\n",
   );
 
   // ── Security notice ──

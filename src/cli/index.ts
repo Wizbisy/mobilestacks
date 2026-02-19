@@ -13,7 +13,7 @@ import path from 'path';
 // Auto-load all tasks in src/tasks
 const tasksDir = path.join(__dirname, '../tasks');
 fs.readdirSync(tasksDir)
-  .filter(f => f.endsWith('.ts') || f.endsWith('.js'))
+  .filter(f => (f.endsWith('.ts') || f.endsWith('.js')) && !f.endsWith('.d.ts') && !f.includes('.test.'))
   .forEach(f => {
     require(path.join(tasksDir, f));
   });
