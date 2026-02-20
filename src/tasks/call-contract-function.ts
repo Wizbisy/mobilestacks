@@ -16,10 +16,14 @@ task('call-contract-function', 'Call a public function on a deployed Clarity con
     const apiUrl = network === 'mainnet'
       ? env.config.networks.mainnet.url
       : env.config.networks.testnet.url;
-    const url = `${apiUrl}/v2/contracts/call-read/${contractAddress}/${contractName}/${functionName}`;
+
+    const addressPart = contractAddress.includes('.') ? contractAddress.split('.')[0] : contractAddress;
+
+    const url = `${apiUrl}/v2/contracts/call-read/${addressPart}/${contractName}/${functionName}`;
     const body = fnArgs
-      ? { arguments: fnArgs.split(',').map((a: string) => a.trim()) }
-      : { arguments: [] };
+      ? { sender: addressPart, arguments: fnArgs.split(',').map((a: string) => a.trim()) }
+      : { sender: addressPart, arguments: [] };
+      
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
