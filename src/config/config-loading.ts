@@ -17,8 +17,8 @@ export function loadConfig(configPath?: string, cliOverrides: Record<string, unk
 
   // .env override
   if (env.privateKey) config.wallet.privateKey = env.privateKey;
-  if (env.mainnetUrl) config.networks.mainnet.url = env.mainnetUrl;
-  if (env.testnetUrl) config.networks.testnet.url = env.testnetUrl;
+  if (env.mainnetUrl) config.networks.mainnet.url = env.mainnetUrl.replace(/\/$/, "");
+  if (env.testnetUrl) config.networks.testnet.url = env.testnetUrl.replace(/\/$/, "");
 
   // CLI overrides
   config = { ...config, ...cliOverrides };

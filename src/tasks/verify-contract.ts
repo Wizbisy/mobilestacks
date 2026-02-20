@@ -26,10 +26,11 @@ task('verify-contract', 'Verify a deployed Clarity contract on the Stacks explor
     const res = await fetch(url);
     if (!res.ok) throw new Error(`Failed to fetch on-chain contract source: ${res.statusText}`);
     const onChain = await res.json() as { source_code?: string };
-    const verified = onChain.source_code && onChain.source_code.trim() === codeBody.trim();
+    const verified = onChain.source_code 
+      && onChain.source_code.replace(/\r\n/g, '\n').trim() === codeBody.replace(/\r\n/g, '\n').trim();
     const explorer = network === 'mainnet'
-      ? `https://explorer.hiro.so/txid/${contractAddress}.${contractName}`
-      : `https://explorer.hiro.so/txid/${contractAddress}.${contractName}?chain=testnet`;
+      ? `https://explorer.hiro.so/txid/${fullContractId}`
+      : `https://explorer.hiro.so/txid/${fullContractId}?chain=testnet`;
     return {
       verified,
       message: verified ? 'Contract source matches on-chain code!' : 'Source does NOT match on-chain code!',
