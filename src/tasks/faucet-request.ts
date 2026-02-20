@@ -5,7 +5,7 @@ task('faucet-request', 'Request STX from the testnet faucet')
   .addParam('address', 'STX address to fund', { type: 'string', required: true })
   .setAction(async (args, env) => {
     if (env.network.client.baseUrl && env.network.client.baseUrl.includes('testnet')) {
-      const url = `https://stacks-node-api.testnet.stacks.co/extended/v1/faucet/stx`; // Default testnet faucet
+      const url = `${env.config.networks.testnet.url}/extended/v1/faucet/stx`;
       const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

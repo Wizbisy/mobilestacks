@@ -7,15 +7,15 @@ task('call-contract-function', 'Call a public function on a deployed Clarity con
   .addParam('functionName', 'Function name', { type: 'string', required: true })
   .addParam('args', 'Comma-separated function arguments', { type: 'string', required: false, defaultValue: '' })
   .addParam('network', 'Network (mainnet|testnet)', { type: 'string', required: false, defaultValue: 'testnet' })
-  .setAction(async (args) => {
+  .setAction(async (args, env) => {
     const contractAddress = args.contractAddress as string;
     const contractName = args.contractName as string;
     const functionName = args.functionName as string;
     const fnArgs = args.args as string;
     const network = args.network as string;
     const apiUrl = network === 'mainnet'
-      ? 'https://stacks-node-api.mainnet.stacks.co'
-      : 'https://stacks-node-api.testnet.stacks.co';
+      ? env.config.networks.mainnet.url
+      : env.config.networks.testnet.url;
     const url = `${apiUrl}/v2/contracts/call-read/${contractAddress}/${contractName}/${functionName}`;
     const body = fnArgs
       ? { arguments: fnArgs.split(',').map((a: string) => a.trim()) }

@@ -5,11 +5,11 @@ task('get-contract-info', 'Get contract attributes and details from Stacks block
   .addParam('contractAddress', 'Deployed contract address (STX...)', { type: 'string', required: true })
   .addParam('contractName', 'Contract name', { type: 'string', required: true })
   .addParam('network', 'Network (mainnet|testnet)', { type: 'string', required: false, defaultValue: 'testnet' })
-  .setAction(async (args) => {
+  .setAction(async (args, env) => {
     const { contractAddress, contractName, network } = args;
     const apiUrl = network === 'mainnet'
-      ? 'https://stacks-node-api.mainnet.stacks.co'
-      : 'https://stacks-node-api.testnet.stacks.co';
+      ? env.config.networks.mainnet.url
+      : env.config.networks.testnet.url;
     const url = `${apiUrl}/extended/v1/contract/${contractAddress}/${contractName}`;
     const res = await fetch(url);
     if (!res.ok) throw new Error(`Failed to fetch contract info: ${res.statusText}`);
