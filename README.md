@@ -25,8 +25,8 @@ All config lives in `mobilestacks.config.ts`:
 ```ts
 export default {
   networks: {
-    mainnet: { url: "https://stacks-node-api.mainnet.stacks.co", name: "mainnet" },
-    testnet: { url: "https://stacks-node-api.testnet.stacks.co", name: "testnet" },
+    mainnet: { url: "https://api.mainnet.hiro.so", name: "mainnet" },
+    testnet: { url: "https://api.testnet.hiro.so", name: "testnet" },
   },
   defaultNetwork: "testnet",
   wallet: {
