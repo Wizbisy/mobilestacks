@@ -89,7 +89,12 @@ TaskDefinitions.getInstance().getAllTasks().forEach(task => {
       const env = new RuntimeEnvironment(config);
       const result = await task.action(opts, env);
       if (typeof result === 'object') {
-        console.log(chalk.greenBright('Success!'));
+        const resObj = result as Record<string, unknown>;
+        if (resObj.txid) {
+          console.log(chalk.yellowBright('Transaction broadcasted to mempool! (Check explorer for final confirmation)'));
+        } else {
+          console.log(chalk.greenBright('Success!'));
+        }
         console.dir(result, { depth: null, colors: true });
       } else {
         console.log(chalk.greenBright(result));

@@ -1,9 +1,8 @@
 import { task } from '../core/dsl';
 import fetch from 'node-fetch';
+import { getAddressFromPrivateKey } from '@stacks/transactions';
 
-function maskAddress(address: string) {
-  return address ? address.slice(0, 6) + '...' + address.slice(-4) : '';
-}
+
 
 function containsSecret(obj: unknown): boolean {
   const str = JSON.stringify(obj);
@@ -14,10 +13,14 @@ task('get-balance', 'Get STX balance for the configured wallet address or a prov
   .addParam('address', 'STX address to check (optional, defaults to wallet main address)', { type: 'string', required: false })
   .addParam('network', 'Network (mainnet|testnet)', { type: 'string', required: false, defaultValue: 'testnet' })
   .setAction(async (args, env) => {
-    const address = (args.address as string) || env.wallet.address;
     const networkName = args.network as string;
     
-    if (!address) throw new Error('No wallet address found.');
+    // dynamically derive address if not provided
+    let address = args.address as string;
+    if (!address) {
+      if (!env.wallet.privateKey) throw new Error('No wallet address or private key found.');
+      address = getAddressFromPrivateKey(env.wallet.privateKey, networkName === 'mainnet' ? 'mainnet' : 'testnet');
+    }
     
     const apiUrl = networkName === 'mainnet' 
       ? env.config.networks.mainnet.url 
@@ -27,12 +30,19 @@ task('get-balance', 'Get STX balance for the configured wallet address or a prov
     const res = await fetch(url);
     if (!res.ok) throw new Error(`Failed to fetch balance: ${res.statusText}`);
     const data: unknown = await res.json();
-    const result = {
-      address: maskAddress(address),
-      stx: (data as { stx: { balance: string; locked: string; unlock_height: number } }).stx.balance,
-      locked: (data as { stx: { balance: string; locked: string; unlock_height: number } }).stx.locked,
-      unlock_height: (data as { stx: { balance: string; locked: string; unlock_height: number } }).stx.unlock_height
+    
+    const stxData = (data as { stx: { balance: string; locked: string; unlock_height: number } }).stx;
+    const stxFormatted = (parseInt(stxData.balance || '0', 10) / 1_000_000).toString() + ' STX';
+    
+    const result: Record<string, unknown> = {
+      address,
+      stx: stxFormatted,
+      locked: stxData.locked === '0' ? '0' : stxData.locked,
     };
+    if (stxData.unlock_height !== undefined && stxData.unlock_height !== 0) {
+      result.unlock_height = stxData.unlock_height;
+    }
+
     if (containsSecret(result)) {
       console.warn('[mobilestacks] Warning: Output may contain sensitive data.');
     }

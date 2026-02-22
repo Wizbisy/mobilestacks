@@ -1,5 +1,6 @@
 import { task } from '../core/dsl';
 import fetch from 'node-fetch';
+import { hexToCV, cvToJSON } from '@stacks/transactions';
 
 task('call-contract-function', 'Call a public function on a deployed Clarity contract')
   .addParam('contractAddress', 'Deployed contract address (STX...)', { type: 'string', required: true })
@@ -30,6 +31,15 @@ task('call-contract-function', 'Call a public function on a deployed Clarity con
       body: JSON.stringify(body)
     });
     if (!res.ok) throw new Error(`Failed to call contract function: ${res.statusText}`);
-    const result = await res.json();
+    
+    const result = await res.json() as Record<string, unknown>;
+    if (result && result.okay && typeof result.result === 'string' && result.result.startsWith('0x')) {
+      try {
+        result.decodedResult = cvToJSON(hexToCV(result.result));
+      } catch (e) {
+        // ignore decode errors, fallback to raw hex
+      }
+    }
+    
     return result;
   });

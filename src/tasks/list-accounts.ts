@@ -1,9 +1,6 @@
 import { task } from '../core/dsl';
 import { generateWallet } from '@stacks/wallet-sdk';
-
-function maskAddress(address: string) {
-  return address ? address.slice(0, 6) + '...' + address.slice(-4) : '';
-}
+import { getAddressFromPrivateKey } from '@stacks/transactions';
 
 function containsSecret(obj: unknown): boolean {
   const str = JSON.stringify(obj);
@@ -11,15 +8,25 @@ function containsSecret(obj: unknown): boolean {
 }
 
 task('list-accounts', 'List all accounts derived from the configured seed phrase')
+  .addParam('network', 'Network (mainnet|testnet)', { type: 'string', required: false, defaultValue: 'testnet' })
   .setAction(async (args, env) => {
+    const networkName = args.network as string;
+    
     if (!env.config.wallet.seedPhrase) {
       throw new Error('No seed phrase configured.');
     }
     const wallet = await generateWallet({ secretKey: env.config.wallet.seedPhrase, password: '' });
-    const result = wallet.accounts.map((a: unknown) => ({
-      address: maskAddress((a as { address: string }).address || (a as { stxAddress: string }).stxAddress),
-      index: (a as { index: number }).index
-    }));
+    
+    const result = wallet.accounts.map((a: unknown) => {
+      const account = a as { index: number; stxPrivateKey: string };
+      // Actually Wallet SDK stxPrivateKey is standard 32-byte hex.
+      const address = getAddressFromPrivateKey(account.stxPrivateKey, networkName === 'mainnet' ? 'mainnet' : 'testnet');
+      return {
+        address,
+        index: account.index
+      };
+    });
+    
     if (containsSecret(result)) {
       console.warn('[mobilestacks] Warning: Output may contain sensitive data.');
     }

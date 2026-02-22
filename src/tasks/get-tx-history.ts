@@ -1,5 +1,6 @@
 import { task } from '../core/dsl';
 import fetch from 'node-fetch';
+import { getAddressFromPrivateKey } from '@stacks/transactions';
 
 function maskAddress(address: string) {
   return address ? address.slice(0, 6) + '...' + address.slice(-4) : '';
@@ -14,8 +15,11 @@ task('get-tx-history', 'Get transaction history for the configured wallet addres
   .addParam('limit', 'Number of transactions to fetch', { type: 'number', required: false, defaultValue: 10 })
   .addParam('network', 'Network (mainnet|testnet)', { type: 'string', required: false, defaultValue: 'testnet' })
   .setAction(async (args, env) => {
-    const address = env.wallet.address;
     const networkName = args.network as string;
+    let address = env.wallet.address;
+    if (env.wallet.privateKey) {
+      address = getAddressFromPrivateKey(env.wallet.privateKey, networkName === 'mainnet' ? 'mainnet' : 'testnet');
+    }
     
     if (!address) throw new Error('No wallet address found.');
     
