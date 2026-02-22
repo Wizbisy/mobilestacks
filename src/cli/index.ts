@@ -66,17 +66,20 @@ TaskDefinitions.getInstance().getAllTasks().forEach(task => {
   });
   cmd.action(async (opts) => {
     try {
-      // Prompt for missing required params
-      const missing = task.params.filter(p => p.required !== false && !opts[p.name]);
-      if (missing.length > 0) {
-        const answers = await inquirer.prompt(missing.map(p => ({
+      const argsString = process.argv.slice(3).join(' ');
+      
+      const unprovided = task.params.filter(p => !argsString.includes(`--${p.name}`));
+      
+      if (unprovided.length > 0 && process.stdout.isTTY) {
+        const answers = await inquirer.prompt(unprovided.map(p => ({
           type: p.type === 'boolean' ? 'confirm' : 'input',
           name: p.name,
           message: p.description,
-          default: p.defaultValue
+          default: opts[p.name] !== undefined ? opts[p.name] : p.defaultValue
         })));
         Object.assign(opts, answers);
       }
+
       // Type conversion
       task.params.forEach(p => {
         if (opts[p.name] && p.type === 'number') opts[p.name] = Number(opts[p.name]);
