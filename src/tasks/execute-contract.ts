@@ -37,12 +37,14 @@ task('execute-contract', 'Execute a state-modifying function on a Clarity contra
   .addParam('functionName', 'Function name', { type: 'string', required: true })
   .addParam('args', 'Comma-separated args e.g. u1,"hello",ST...', { type: 'string', required: false, defaultValue: '' })
   .addParam('network', 'Network (mainnet|testnet)', { type: 'string', required: false, defaultValue: 'testnet' })
+  .addParam('fee', 'Custom fee in microSTX', { type: 'number', required: false })
   .setAction(async (args, env) => {
     const contractAddress = args.contractAddress as string;
     const contractName = args.contractName as string;
     const functionName = args.functionName as string;
     const fnArgs = args.args as string;
     const networkName = args.network as string;
+    const fee = args.fee as number | undefined;
     const wallet = env.wallet;
 
     const networkUrl = networkName === 'mainnet' 
@@ -65,6 +67,7 @@ task('execute-contract', 'Execute a state-modifying function on a Clarity contra
       contractName,
       functionName,
       functionArgs: parsedArgs,
+      fee: fee !== undefined ? fee : undefined,
       senderKey: wallet.privateKey,
       validateWithAbi: false,
       network,

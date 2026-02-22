@@ -21,11 +21,13 @@ task('deploy-contract', 'Deploy a Clarity smart contract to Stacks blockchain')
   .addParam('file', 'Path to Clarity contract file', { type: 'string', required: true })
   .addParam('network', 'Network to deploy to (mainnet|testnet)', { type: 'string', required: false, defaultValue: 'testnet' })
   .addParam('clarityVersion', 'Version of Clarity to use (1|2|3|4)', { type: 'number', required: false, defaultValue: 2 })
+  .addParam('fee', 'Custom fee in microSTX', { type: 'number', required: false })
   .setAction(async (args, env) => {
     const contractName = args.contractName as string;
     const file = args.file as string;
     const network = args.network as string;
     const clarityVersion = args.clarityVersion as number;
+    const fee = args.fee as number | undefined;
     let codeBody = fs.readFileSync(file, 'utf8');
     codeBody = codeBody.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
     codeBody = codeBody.replace(/^\uFEFF/, '').replace(/[^\x20-\x7E\n\t]/g, '');
@@ -38,6 +40,7 @@ task('deploy-contract', 'Deploy a Clarity smart contract to Stacks blockchain')
       contractName,
       codeBody,
       clarityVersion,
+      fee: fee !== undefined ? fee : undefined,
       senderKey: env.wallet.privateKey,
       network: env.network,
     };

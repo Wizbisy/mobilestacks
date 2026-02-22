@@ -17,11 +17,13 @@ task('send-stx', 'Sends STX to an address')
   .addParam('amount', 'Amount in STX (e.g. 10.5)', { type: 'number', required: true })
   .addParam('memo', 'Optional memo', { type: 'string', required: false, defaultValue: '' })
   .addParam('network', 'Network (mainnet|testnet)', { type: 'string', required: false, defaultValue: 'testnet' })
+  .addParam('fee', 'Custom fee in microSTX', { type: 'number', required: false })
   .setAction(async (args, env) => {
     const to = args.to as string;
     const amountSTX = args.amount as number;
     const memo = args.memo as string | undefined;
     const networkName = args.network as string;
+    const fee = args.fee as number | undefined;
     const wallet = env.wallet;
     
     const networkUrl = networkName === 'mainnet' 
@@ -36,13 +38,18 @@ task('send-stx', 'Sends STX to an address')
     // Convert STX to microSTX (1 STX = 1,000,000 microSTX)
     const amountMicroStx = BigInt(Math.floor(amountSTX * 1_000_000));
 
-    const tx = await makeSTXTokenTransfer({
+    const txOptions: any = {
       recipient: to,
       amount: amountMicroStx,
       senderKey: wallet.privateKey,
       network,
       memo: memo || undefined
-    });
+    };
+    if (fee !== undefined) {
+      txOptions.fee = fee;
+    }
+
+    const tx = await makeSTXTokenTransfer(txOptions);
     const result = await broadcastTransaction({ transaction: tx, network });
     if (containsSecret(result)) {
       console.warn('[mobilestacks] Warning: Output may contain sensitive data.');
