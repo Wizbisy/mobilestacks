@@ -1,5 +1,6 @@
 import { task } from '../core/dsl';
 import { broadcastTransaction, makeSTXTokenTransfer } from '@stacks/transactions';
+import { createNetwork } from '@stacks/network';
 
 function maskAddress(address: string) {
   return address ? address.slice(0, 6) + '...' + address.slice(-4) : '';
@@ -15,11 +16,22 @@ task('send-stx', 'Sends STX to an address')
   .addParam('to', 'Recipient STX address', { type: 'string', required: true })
   .addParam('amount', 'Amount in STX (e.g. 10.5)', { type: 'number', required: true })
   .addParam('memo', 'Optional memo', { type: 'string', required: false, defaultValue: '' })
+  .addParam('network', 'Network (mainnet|testnet)', { type: 'string', required: false, defaultValue: 'testnet' })
   .setAction(async (args, env) => {
     const to = args.to as string;
     const amountSTX = args.amount as number;
     const memo = args.memo as string | undefined;
-    const { wallet, network } = env;
+    const networkName = args.network as string;
+    const wallet = env.wallet;
+    
+    const networkUrl = networkName === 'mainnet' 
+      ? env.config.networks.mainnet.url 
+      : env.config.networks.testnet.url;
+
+    const network = createNetwork({
+      network: networkName as 'mainnet' | 'testnet',
+      client: { baseUrl: networkUrl }
+    });
     
     // Convert STX to microSTX (1 STX = 1,000,000 microSTX)
     const amountMicroStx = BigInt(Math.floor(amountSTX * 1_000_000));

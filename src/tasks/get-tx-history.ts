@@ -12,11 +12,17 @@ function containsSecret(obj: unknown): boolean {
 
 task('get-tx-history', 'Get transaction history for the configured wallet address')
   .addParam('limit', 'Number of transactions to fetch', { type: 'number', required: false, defaultValue: 10 })
+  .addParam('network', 'Network (mainnet|testnet)', { type: 'string', required: false, defaultValue: 'testnet' })
   .setAction(async (args, env) => {
     const address = env.wallet.address;
+    const networkName = args.network as string;
+    
     if (!address) throw new Error('No wallet address found.');
-    const network = env.network;
-    const apiUrl = network.client.baseUrl;
+    
+    const apiUrl = networkName === 'mainnet' 
+      ? env.config.networks.mainnet.url 
+      : env.config.networks.testnet.url;
+      
     const url = `${apiUrl}/extended/v1/address/${address}/transactions?limit=${args.limit}`;
     const res = await fetch(url);
     if (!res.ok) throw new Error(`Failed to fetch tx history: ${res.statusText}`);

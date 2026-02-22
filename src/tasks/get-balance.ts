@@ -12,11 +12,17 @@ function containsSecret(obj: unknown): boolean {
 
 task('get-balance', 'Get STX balance for the configured wallet address or a provided address')
   .addParam('address', 'STX address to check (optional, defaults to wallet main address)', { type: 'string', required: false })
+  .addParam('network', 'Network (mainnet|testnet)', { type: 'string', required: false, defaultValue: 'testnet' })
   .setAction(async (args, env) => {
     const address = (args.address as string) || env.wallet.address;
+    const networkName = args.network as string;
+    
     if (!address) throw new Error('No wallet address found.');
-    const network = env.network;
-    const apiUrl = network.client.baseUrl;
+    
+    const apiUrl = networkName === 'mainnet' 
+      ? env.config.networks.mainnet.url 
+      : env.config.networks.testnet.url;
+      
     const url = `${apiUrl}/extended/v1/address/${address}/balances`;
     const res = await fetch(url);
     if (!res.ok) throw new Error(`Failed to fetch balance: ${res.statusText}`);
