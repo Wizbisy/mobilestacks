@@ -1,6 +1,6 @@
 {
   "name": "mobilestacks",
-  "version": "0.1.15",
+  "version": "0.1.16",
   "description": "Professional Task Runner & CLI for the Stacks Blockchain",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
