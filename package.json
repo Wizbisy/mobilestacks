@@ -1,7 +1,7 @@
 {
   "name": "mobilestacks",
   "version": "0.1.20",
-  "description": "Professional Task Runner & CLI for the Stacks Blockchain",
+  "description": "Task Runner & CLI for the Stacks Blockchain",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
@@ -59,7 +59,7 @@
   },
   "dependencies": {
     "@stacks/network": "latest",
-    "@stacks/transactions": "latest",
+    "@stacks/transactions": "^7.3.1",
     "@stacks/wallet-sdk": "latest",
     "chalk": "^4.1.2",
     "commander": "^11.0.0",

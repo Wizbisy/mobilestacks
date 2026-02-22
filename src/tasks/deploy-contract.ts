@@ -20,10 +20,12 @@ task('deploy-contract', 'Deploy a Clarity smart contract to Stacks blockchain')
   .addParam('contractName', 'Name of the contract', { type: 'string', required: true })
   .addParam('file', 'Path to Clarity contract file', { type: 'string', required: true })
   .addParam('network', 'Network to deploy to (mainnet|testnet)', { type: 'string', required: false, defaultValue: 'testnet' })
+  .addParam('clarityVersion', 'Version of Clarity to use (1|2|3|4)', { type: 'number', required: false, defaultValue: 2 })
   .setAction(async (args, env) => {
     const contractName = args.contractName as string;
     const file = args.file as string;
     const network = args.network as string;
+    const clarityVersion = args.clarityVersion as number;
     let codeBody = fs.readFileSync(file, 'utf8');
     codeBody = codeBody.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
     codeBody = codeBody.replace(/^\uFEFF/, '').replace(/[^\x20-\x7E\n\t]/g, '');
@@ -32,12 +34,14 @@ task('deploy-contract', 'Deploy a Clarity smart contract to Stacks blockchain')
     } else {
       env.network = createNetwork({ network: 'testnet', client: { baseUrl: env.config.networks.testnet.url } });
     }
-    const tx = await makeContractDeploy({
+    const txOptions: any = {
       contractName,
       codeBody,
+      clarityVersion,
       senderKey: env.wallet.privateKey,
       network: env.network,
-    });
+    };
+    const tx = await makeContractDeploy(txOptions);
     const result = await broadcastTransaction({ transaction: tx, network: env.network });
     if (containsSecret(result)) {
       console.warn('[mobilestacks] Warning: Output may contain sensitive data.');
