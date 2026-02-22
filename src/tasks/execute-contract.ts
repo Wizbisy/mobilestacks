@@ -77,7 +77,11 @@ task('execute-contract', 'Execute a state-modifying function on a Clarity contra
       console.warn('[mobilestacks] Warning: Output may contain sensitive data.');
     }
     if (result && result.txid) {
-      result.txid = maskAddress(result.txid);
+      const resObj = result as Record<string, unknown>;
+      resObj.explorerUrl = networkName === 'mainnet' 
+        ? `https://explorer.hiro.so/txid/${result.txid}`
+        : `https://explorer.hiro.so/txid/${result.txid}?chain=testnet`;
+      resObj.txid = maskAddress(result.txid);
     }
     
     // Broadcast transaction returns txid or error details

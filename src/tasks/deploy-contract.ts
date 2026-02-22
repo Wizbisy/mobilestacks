@@ -44,7 +44,11 @@ task('deploy-contract', 'Deploy a Clarity smart contract to Stacks blockchain')
     }
     // Mask any address fields if present
     if (result && result.txid) {
-      result.txid = maskAddress(result.txid);
+      const resObj = result as Record<string, unknown>;
+      resObj.explorerUrl = network === 'mainnet' 
+        ? `https://explorer.hiro.so/txid/${result.txid}`
+        : `https://explorer.hiro.so/txid/${result.txid}?chain=testnet`;
+      resObj.txid = maskAddress(result.txid);
     }
     return result;
   });
