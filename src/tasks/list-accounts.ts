@@ -19,7 +19,6 @@ task('list-accounts', 'List all accounts derived from the configured seed phrase
     
     const result = wallet.accounts.map((a: unknown) => {
       const account = a as { index: number; stxPrivateKey: string };
-      // Actually Wallet SDK stxPrivateKey is standard 32-byte hex.
       const address = getAddressFromPrivateKey(account.stxPrivateKey, networkName === 'mainnet' ? 'mainnet' : 'testnet');
       return {
         address,
