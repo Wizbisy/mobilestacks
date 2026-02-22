@@ -10,6 +10,7 @@ import {
   falseCV,
   ClarityValue
 } from '@stacks/transactions';
+import { createNetwork } from '@stacks/network';
 
 function parseArgToCV(arg: string): ClarityValue {
   const t = arg.trim();
@@ -35,12 +36,23 @@ task('execute-contract', 'Execute a state-modifying function on a Clarity contra
   .addParam('contractName', 'Contract name', { type: 'string', required: true })
   .addParam('functionName', 'Function name', { type: 'string', required: true })
   .addParam('args', 'Comma-separated args e.g. u1,"hello",ST...', { type: 'string', required: false, defaultValue: '' })
+  .addParam('network', 'Network (mainnet|testnet)', { type: 'string', required: false, defaultValue: 'testnet' })
   .setAction(async (args, env) => {
     const contractAddress = args.contractAddress as string;
     const contractName = args.contractName as string;
     const functionName = args.functionName as string;
     const fnArgs = args.args as string;
-    const { wallet, network } = env;
+    const networkName = args.network as string;
+    const wallet = env.wallet;
+
+    const networkUrl = networkName === 'mainnet' 
+      ? env.config.networks.mainnet.url 
+      : env.config.networks.testnet.url;
+
+    const network = createNetwork({
+      network: networkName as 'mainnet' | 'testnet',
+      client: { baseUrl: networkUrl }
+    });
 
     const addressPart = contractAddress.includes('.') ? contractAddress.split('.')[0] : contractAddress;
 
