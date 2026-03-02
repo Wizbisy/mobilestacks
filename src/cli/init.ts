@@ -31,7 +31,6 @@ export async function runInit() {
     },
   ]);
 
-  // ── Config file: references env vars, never embeds secrets ──
   const config = `import 'dotenv/config';
 
 export default {
@@ -41,7 +40,6 @@ export default {
   },
   defaultNetwork: 'testnet',
   wallet: {
-    // Secrets are read from environment variables — never hard-code them here.
     privateKey: process.env.MOBILESTACKS_PRIVATE_KEY || '',
     seedPhrase: process.env.MOBILESTACKS_SEED_PHRASE || '',
     derivationPath: ${JSON.stringify(answers.derivationPath)},
@@ -50,15 +48,12 @@ export default {
 `;
 
   fs.writeFileSync(path.join(process.cwd(), 'mobilestacks.config.ts'), config);
-
-  // ── .env file (if it doesn't exist yet) ──
   const envPath = path.join(process.cwd(), '.env');
   if (!fs.existsSync(envPath)) {
     const envContent = `# Mobilestacks secrets — NEVER commit this file!\nMOBILESTACKS_PRIVATE_KEY=\nMOBILESTACKS_SEED_PHRASE=\nSTACKS_MAINNET_URL=${answers.mainnetUrl}\nSTACKS_TESTNET_URL=${answers.testnetUrl}\n`;
-    fs.writeFileSync(envPath, envContent, { mode: 0o600 }); // owner-only permissions
+    fs.writeFileSync(envPath, envContent, { mode: 0o600 }); 
   }
 
-  // ── Scaffold example contract ──
   const contractsDir = path.join(process.cwd(), 'contracts');
   if (!fs.existsSync(contractsDir)) fs.mkdirSync(contractsDir);
   fs.writeFileSync(
@@ -66,7 +61,6 @@ export default {
     '(define-public (hello-world)\n  (ok "Hello, Stacks!"))\n',
   );
 
-  // ── Scaffold example user task ──
   const tasksDir = path.join(process.cwd(), 'src', 'tasks');
   if (!fs.existsSync(tasksDir)) fs.mkdirSync(tasksDir, { recursive: true });
   fs.writeFileSync(
@@ -74,7 +68,6 @@ export default {
     "import { task } from 'mobilestacks';\n\ntask('example', 'An example user task for onboarding')\n  .addParam('name', 'Your name', { type: 'string', required: false, defaultValue: 'World' })\n  .setAction(async (args: Record<string, string>) => {\n    return `Hello, ${args.name}! Welcome to mobilestacks.`;\n  });\n",
   );
 
-  // ── Security notice ──
   console.log('\n✅ Created:');
   console.log('   • mobilestacks.config.ts  (reads secrets from env vars)');
   console.log('   • .env                    (store your secrets here)');

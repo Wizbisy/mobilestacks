@@ -6,11 +6,10 @@ import { RuntimeEnvironment } from '../core/runtime-environment';
 import { TaskDefinitions } from '../core/tasks-definitions';
 import { runInit } from './init';
 import inquirer from 'inquirer';
-
-// Import all user tasks
 import fs from 'fs';
 import path from 'path';
-// Auto-load all tasks in src/tasks
+
+
 const tasksDir = path.join(__dirname, '../tasks');
 fs.readdirSync(tasksDir)
   .filter(f => (f.endsWith('.ts') || f.endsWith('.js')) && !f.endsWith('.d.ts') && !f.includes('.test.'))
@@ -25,7 +24,6 @@ program
   .version('0.1.0');
 
 
-// Init command for project scaffolding
 program
   .command('init')
   .description('Scaffold a new mobilestacks project and config')
@@ -34,7 +32,6 @@ program
     process.exit(0);
   });
 
-// List all tasks if no command is given
 program.action(() => {
   console.log(chalk.bold.blue('\nMobilestacks - Professional Task Runner for Stacks\n'));
   console.log(chalk.white('USAGE: ') + chalk.green('mobilestacks <task> [options]\n'));
@@ -51,7 +48,6 @@ program.action(() => {
   program.help({ error: false });
 });
 
-// Dynamically add all registered tasks
 
 TaskDefinitions.getInstance().getAllTasks().forEach(task => {
   const cmd = program.command(task.name)
@@ -80,7 +76,6 @@ TaskDefinitions.getInstance().getAllTasks().forEach(task => {
         Object.assign(opts, answers);
       }
 
-      // Type conversion
       task.params.forEach(p => {
         if (opts[p.name] && p.type === 'number') opts[p.name] = Number(opts[p.name]);
         if (opts[p.name] && p.type === 'boolean') opts[p.name] = Boolean(opts[p.name]);

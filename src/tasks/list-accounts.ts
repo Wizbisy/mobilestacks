@@ -4,7 +4,7 @@ import { getAddressFromPrivateKey } from '@stacks/transactions';
 
 function containsSecret(obj: unknown): boolean {
   const str = JSON.stringify(obj);
-  return /[A-Za-z0-9]{32,}/.test(str); // crude check for long secrets
+  return /[A-Za-z0-9]{32,}/.test(str); 
 }
 
 task('list-accounts', 'List all accounts derived from the configured seed phrase')

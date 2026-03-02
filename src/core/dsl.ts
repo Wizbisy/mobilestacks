@@ -27,7 +27,6 @@ function task(name: string, description: string) {
         description,
         params,
         action: async (args: Record<string, unknown>, env: RuntimeEnvironment) => {
-          // Validate args against schemas if present
           for (const param of params) {
             if (param.schema && args[param.name] !== undefined) {
               try {
@@ -47,17 +46,14 @@ function task(name: string, description: string) {
 }
 
 function subtask(name: string, description: string, parentTaskName?: string) {
-  // Register as a subtask with a parent if provided
   const sub = task(name, description);
   if (parentTaskName) {
-    // Attach parent info for future use (e.g., dependency graph, CLI grouping)
     const def = TaskDefinitions.getInstance().getTask(name);
     if (def) (def as TaskDefinition & { parent?: string }).parent = parentTaskName;
   }
   return sub;
 }
 
-// Workflow system: define and run ordered task/subtask sequences
 export type WorkflowStep = { taskName: string; args?: Record<string, unknown> };
 export type Workflow = WorkflowStep[];
 

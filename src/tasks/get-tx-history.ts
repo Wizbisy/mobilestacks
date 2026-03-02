@@ -8,7 +8,7 @@ function maskAddress(address: string) {
 
 function containsSecret(obj: unknown): boolean {
   const str = JSON.stringify(obj);
-  return /[A-Za-z0-9]{32,}/.test(str); // crude check for long secrets
+  return /[A-Za-z0-9]{32,}/.test(str); 
 }
 
 task('get-tx-history', 'Get transaction history for the configured wallet address')
@@ -38,7 +38,6 @@ task('get-tx-history', 'Get transaction history for the configured wallet addres
       fee_rate: (tx as { fee_rate: string }).fee_rate,
       block_height: (tx as { block_height: number }).block_height
     }));
-    // Mask address in logs and warn if secrets detected
     if (containsSecret(txs)) {
       console.warn('[mobilestacks] Warning: Output may contain sensitive data.');
     }

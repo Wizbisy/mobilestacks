@@ -87,6 +87,5 @@ task('execute-contract', 'Execute a state-modifying function on a Clarity contra
       resObj.txid = maskAddress(result.txid);
     }
     
-    // Broadcast transaction returns txid or error details
     return result;
   });

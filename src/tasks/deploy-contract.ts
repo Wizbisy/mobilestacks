@@ -12,10 +12,9 @@ function maskAddress(address: string) {
 
 function containsSecret(obj: unknown): boolean {
   const str = JSON.stringify(obj);
-  return /[A-Za-z0-9]{32,}/.test(str); // crude check for long secrets
+  return /[A-Za-z0-9]{32,}/.test(str); 
 }
 
-// Deploy a Clarity contract to Stacks mainnet or testnet
 task('deploy-contract', 'Deploy a Clarity smart contract to Stacks blockchain')
   .addParam('contractName', 'Name of the contract', { type: 'string', required: true })
   .addParam('file', 'Path to Clarity contract file', { type: 'string', required: true })
@@ -49,7 +48,6 @@ task('deploy-contract', 'Deploy a Clarity smart contract to Stacks blockchain')
     if (containsSecret(result)) {
       console.warn('[mobilestacks] Warning: Output may contain sensitive data.');
     }
-    // Mask any address fields if present
     if (result && result.txid) {
       const resObj = result as Record<string, unknown>;
       resObj.explorerUrl = network === 'mainnet' 

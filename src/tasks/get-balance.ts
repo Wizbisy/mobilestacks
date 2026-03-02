@@ -6,7 +6,7 @@ import { getAddressFromPrivateKey } from '@stacks/transactions';
 
 function containsSecret(obj: unknown): boolean {
   const str = JSON.stringify(obj);
-  return /[A-Za-z0-9]{32,}/.test(str); // crude check for long secrets
+  return /[A-Za-z0-9]{32,}/.test(str); 
 }
 
 task('get-balance', 'Get STX balance for the configured wallet address or a provided address')
@@ -15,7 +15,6 @@ task('get-balance', 'Get STX balance for the configured wallet address or a prov
   .setAction(async (args, env) => {
     const networkName = args.network as string;
     
-    // dynamically derive address if not provided
     let address = args.address as string;
     if (!address) {
       if (!env.wallet.privateKey) throw new Error('No wallet address or private key found.');

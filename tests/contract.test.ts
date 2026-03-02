@@ -18,7 +18,6 @@ describe('Sample Contract (Simnet)', () => {
       [],
       deployer
     );
-    // The function returns (ok "Hello, Stacks!")
     expect(result.result).toStrictEqual(Cl.ok(Cl.stringAscii('Hello, Stacks!')));
   });
 });

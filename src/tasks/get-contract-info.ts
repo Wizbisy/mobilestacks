@@ -13,7 +13,6 @@ task('get-contract-info', 'Get contract attributes and details from Stacks block
       ? env.config.networks.mainnet.url
       : env.config.networks.testnet.url;
       
-    // Hiro API expects the full Contract Principal ID (Address.Name)
     const fullContractId = contractAddress.includes('.') 
       ? contractAddress 
       : `${contractAddress}.${contractName}`;

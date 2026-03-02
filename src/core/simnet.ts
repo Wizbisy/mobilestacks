@@ -2,8 +2,6 @@ import { initSimnet } from '@hirosystems/clarinet-sdk';
 import { ClarityValue } from '@stacks/transactions';
 
 
-
-// Import the SDK's Simnet type under an alias
 type SimnetInstance = Awaited<ReturnType<typeof initSimnet>>;
 
 export class Simnet {
@@ -16,11 +14,9 @@ export class Simnet {
   public static async init(): Promise<Simnet> {
     if (!Simnet._instance) {
       Simnet._instance = new Simnet();
-      // Initialize SDK - auto-detects Clarinet.toml from CWD
       try {
         console.log('Initializing Simnet...');
         Simnet._instance.simnet = await initSimnet();
-        // Get accounts
         Simnet._instance.accounts = Simnet._instance.simnet.getAccounts();
       } catch (error) {
         console.error('Failed to initialize Simnet:', error);

@@ -7,7 +7,6 @@ import { extendEnvironment, Extender } from './extender';
 
 describe('DSL', () => {
   beforeEach(() => {
-    // Clear tasks before each test
     (TaskDefinitions.getInstance() as unknown as { _tasks: unknown[] })._tasks = [];
   });
 
@@ -32,21 +31,16 @@ describe('DSL', () => {
     const def = TaskDefinitions.getInstance().getTask('zod-task');
     expect(def).toBeDefined();
 
-    // Mock environment
     const env = {} as RuntimeEnvironment;
 
-    // Valid call
     const result = await def?.action({ age: 20 }, env);
     expect(result).toBe(20);
-
-    // Invalid call
     await expect(def?.action({ age: 10 }, env)).rejects.toThrow('Invalid value for parameter \'age\'');
   });
 
   it('should support environment extensions', () => {
     
     
-    // Clear extensions
     (Extender.getInstance() as unknown as { _extensions: unknown[] })._extensions = [];
 
     extendEnvironment((env: RuntimeEnvironment) => {

@@ -9,8 +9,8 @@ export class RuntimeEnvironment {
   public config: MobilestacksConfig;
   public network: StacksNetwork;
   public wallet!: { privateKey: string; address: string; accountIndex?: number };
-  public stacks: Record<string, unknown>; // Extension point
-  [key: string]: unknown; // Allow extensions
+  public stacks: Record<string, unknown>;
+  [key: string]: unknown;
 
   constructor(config: MobilestacksConfig) {
     this.config = config;
@@ -20,21 +20,18 @@ export class RuntimeEnvironment {
       throw new Error(`Network config not found for: ${networkName}`);
     }
     
-    // Instantiate proper StacksNetwork
     if (networkName === 'mainnet' || networkName === 'testnet') {
       this.network = createNetwork({
         network: networkName,
         client: { baseUrl: networkConfig.url }
       });
     } else {
-      // Default to testnet structure for custom networks
        this.network = createNetwork({
         network: 'testnet',
         client: { baseUrl: networkConfig.url }
       });
     }
 
-    // ── Resolve wallet secrets (env vars take priority over config) ──
     const privateKey =
       process.env.MOBILESTACKS_PRIVATE_KEY ||
       process.env.STACKS_PRIVATE_KEY ||
@@ -66,14 +63,12 @@ export class RuntimeEnvironment {
         throw new Error('Failed to generate wallet from seed phrase');
       });
     } else {
-      // No secrets anywhere — warn but don't crash (devnet may not need a wallet)
       console.warn(
         '⚠️  No wallet secret found. Set MOBILESTACKS_PRIVATE_KEY or MOBILESTACKS_SEED_PHRASE in your .env file.',
       );
     }
     this.stacks = {};
 
-    // Apply extensions
     for (const extension of Extender.getInstance().getExtensions()) {
       extension(this);
     }

@@ -7,9 +7,6 @@ export const NetworkConfigSchema = z.object({
   faucetUrl: z.string().url().nullable().optional(),
 });
 
-
-// Wallet config: secrets are resolved at runtime from env vars.
-// Config values are optional fallbacks.
 export const WalletConfigSchema = z.object({
   privateKey: z.string().optional(),
   seedPhrase: z.string().optional(),

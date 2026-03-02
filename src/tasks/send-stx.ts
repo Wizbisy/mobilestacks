@@ -8,10 +8,9 @@ function maskAddress(address: string) {
 
 function containsSecret(obj: unknown): boolean {
   const str = JSON.stringify(obj);
-  return /[A-Za-z0-9]{32,}/.test(str); // crude check for long secrets
+  return /[A-Za-z0-9]{32,}/.test(str); 
 }
 
-// This task sends STX to an address using the loaded SRE (env)
 task('send-stx', 'Sends STX to an address')
   .addParam('to', 'Recipient STX address', { type: 'string', required: true })
   .addParam('amount', 'Amount in STX (e.g. 10.5)', { type: 'number', required: true })
@@ -35,7 +34,6 @@ task('send-stx', 'Sends STX to an address')
       client: { baseUrl: networkUrl }
     });
     
-    // Convert STX to microSTX (1 STX = 1,000,000 microSTX)
     const amountMicroStx = BigInt(Math.floor(amountSTX * 1_000_000));
 
     const txOptions: any = {
@@ -54,7 +52,6 @@ task('send-stx', 'Sends STX to an address')
     if (containsSecret(result)) {
       console.warn('[mobilestacks] Warning: Output may contain sensitive data.');
     }
-    // Mask any address fields if present
     if (result && result.txid) {
       const resObj = result as Record<string, unknown>;
       resObj.explorerUrl = networkName === 'mainnet' 

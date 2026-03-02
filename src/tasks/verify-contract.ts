@@ -20,8 +20,6 @@ task('verify-contract', 'Verify a deployed Clarity contract on the Stacks explor
     const fullContractId = contractAddress.includes('.') 
       ? contractAddress 
       : `${contractAddress}.${contractName}`;
-
-    // Fetch contract source from chain using full principal ID
     const url = `${apiUrl}/extended/v1/contract/${fullContractId}`;
     const res = await fetch(url);
     if (!res.ok) throw new Error(`Failed to fetch on-chain contract source: ${res.statusText}`);
