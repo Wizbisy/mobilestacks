@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   publish:
     docker:
-      - image: cimg/node:18.20
+      - image: cimg/node:22.11
     working_directory: ~/mobilestacks
     steps:
       - checkout
