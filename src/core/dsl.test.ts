@@ -7,13 +7,13 @@ import { extendEnvironment, Extender } from './extender';
 
 describe('DSL', () => {
   beforeEach(() => {
-    (TaskDefinitions.getInstance() as unknown as { _tasks: unknown[] })._tasks = [];
+    TaskDefinitions.getInstance().clear();
   });
 
   it('should register a task with generic parameters', () => {
     task('test-task', 'A test task')
       .addParam('p1', 'param 1')
-      .setAction(async () => { return 'done'; });
+      .setAction(() => 'done');
 
     const def = TaskDefinitions.getInstance().getTask('test-task');
     expect(def).toBeDefined();
@@ -39,9 +39,7 @@ describe('DSL', () => {
   });
 
   it('should support environment extensions', () => {
-    
-    
-    (Extender.getInstance() as unknown as { _extensions: unknown[] })._extensions = [];
+    Extender.getInstance().clear();
 
     extendEnvironment((env: RuntimeEnvironment) => {
       env['foo'] = 'bar';
@@ -49,7 +47,7 @@ describe('DSL', () => {
 
     const extensions = Extender.getInstance().getExtensions();
     expect(extensions.length).toBe(1);
-    
+
     const mockEnv = {} as RuntimeEnvironment;
     extensions[0](mockEnv);
     expect(mockEnv['foo']).toBe('bar');

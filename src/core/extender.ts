@@ -15,15 +15,19 @@ export class Extender {
     return Extender._instance;
   }
 
-  public addExtension(func: ExtensionFunc) {
+  public addExtension(func: ExtensionFunc): void {
     this._extensions.push(func);
   }
 
   public getExtensions(): ExtensionFunc[] {
     return this._extensions;
   }
+
+  public clear(): void {
+    this._extensions = [];
+  }
 }
 
-export function extendEnvironment(func: ExtensionFunc) {
+export function extendEnvironment(func: ExtensionFunc): void {
   Extender.getInstance().addExtension(func);
 }

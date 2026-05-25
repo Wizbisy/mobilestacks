@@ -1,28 +1,73 @@
 #!/usr/bin/env node
 import chalk from 'chalk';
 import { Command } from 'commander';
+import fs from 'fs';
+import inquirer from 'inquirer';
+import path from 'path';
 import { loadConfig } from '../config/config-loading';
 import { RuntimeEnvironment } from '../core/runtime-environment';
-import { TaskDefinitions } from '../core/tasks-definitions';
+import { TaskDefinitions, TaskParam } from '../core/tasks-definitions';
 import { runInit } from './init';
-import inquirer from 'inquirer';
-import fs from 'fs';
-import path from 'path';
-
 
 const tasksDir = path.join(__dirname, '../tasks');
 fs.readdirSync(tasksDir)
-  .filter(f => (f.endsWith('.ts') || f.endsWith('.js')) && !f.endsWith('.d.ts') && !f.includes('.test.'))
-  .forEach(f => {
-    require(path.join(tasksDir, f));
+  .filter((fileName) => {
+    return (
+      (fileName.endsWith('.ts') || fileName.endsWith('.js')) &&
+      !fileName.endsWith('.d.ts') &&
+      !fileName.includes('.test.')
+    );
+  })
+  .forEach((fileName) => {
+    require(path.join(tasksDir, fileName));
   });
+
+function getProvidedOptions(argv: string[]): Set<string> {
+  return new Set(
+    argv
+      .filter((arg) => arg.startsWith('--'))
+      .map((arg) => arg.slice(2).split('=')[0])
+      .filter(Boolean),
+  );
+}
+
+function parseBoolean(value: unknown): boolean {
+  if (typeof value === 'boolean') return value;
+  if (typeof value === 'string') {
+    const normalized = value.toLowerCase();
+    if (['true', '1', 'yes', 'y'].includes(normalized)) return true;
+    if (['false', '0', 'no', 'n'].includes(normalized)) return false;
+  }
+
+  return Boolean(value);
+}
+
+function coerceParamValue(param: TaskParam, value: unknown): unknown {
+  if (value === undefined) return value;
+  if (param.type === 'number') {
+    const parsed = Number(value);
+    if (Number.isNaN(parsed)) {
+      throw new Error(`Parameter '${param.name}' must be a number.`);
+    }
+    return parsed;
+  }
+  if (param.type === 'boolean') {
+    return parseBoolean(value);
+  }
+  return value;
+}
+
+function getPackageVersion(): string {
+  const packagePath = path.resolve(__dirname, '../../package.json');
+  const packageFile = JSON.parse(fs.readFileSync(packagePath, 'utf8')) as { version?: string };
+  return packageFile.version || '0.0.0';
+}
 
 const program = new Command();
 program
   .name('mobilestacks')
   .description('Professional Task Runner for Stacks')
-  .version('0.1.0');
-
+  .version(getPackageVersion());
 
 program
   .command('init')
@@ -36,73 +81,91 @@ program.action(() => {
   console.log(chalk.bold.blue('\nMobilestacks - Professional Task Runner for Stacks\n'));
   console.log(chalk.white('USAGE: ') + chalk.green('mobilestacks <task> [options]\n'));
   console.log(chalk.bold('Available tasks:'));
-  TaskDefinitions.getInstance().getAllTasks().forEach(task => {
-    const params = task.params.map(p => chalk.yellow(`--${p.name}`)).join(' ');
-    console.log('  ' + chalk.cyan(task.name) + ' ' + params);
-    console.log('    ' + chalk.gray(task.description));
-  });
-  console.log('\n' + chalk.white('Use ') + chalk.green('mobilestacks <task> --help') + chalk.white(' for more info on a task.'));
+  TaskDefinitions.getInstance()
+    .getAllTasks()
+    .forEach((task) => {
+      const params = task.params.map((param) => chalk.yellow(`--${param.name}`)).join(' ');
+      console.log(`  ${chalk.cyan(task.name)} ${params}`);
+      console.log(`    ${chalk.gray(task.description)}`);
+    });
+  console.log(
+    `\n${chalk.white('Use ')}${chalk.green('mobilestacks <task> --help')}${chalk.white(
+      ' for more info on a task.',
+    )}`,
+  );
   console.log(chalk.white('\nExample:'));
-  console.log('  ' + chalk.green('mobilestacks deploy-contract --contractName my-contract --file ./contracts/my-contract.clar --network testnet'));
-  console.log(chalk.white('\nDocs: ') + chalk.underline('https://github.com/your-org/mobilestacks#readme'));
+  console.log(
+    `  ${chalk.green(
+      'mobilestacks deploy-contract --contractName my-contract --file ./contracts/my-contract.clar --network testnet',
+    )}`,
+  );
+  console.log(chalk.white('\nDocs: ') + chalk.underline('https://github.com/Wizbisy/mobilestacks#readme'));
   program.help({ error: false });
 });
 
+TaskDefinitions.getInstance()
+  .getAllTasks()
+  .forEach((task) => {
+    const cmd = program.command(task.name).description(task.description);
 
-TaskDefinitions.getInstance().getAllTasks().forEach(task => {
-  const cmd = program.command(task.name)
-    .description(task.description);
-  task.params.forEach(param => {
-    const optStr = `--${param.name} <value>`;
-    if (param.required !== false) {
-      cmd.option(optStr, param.description);
-    } else {
+    task.params.forEach((param) => {
+      const optStr = param.type === 'boolean' ? `--${param.name}` : `--${param.name} <value>`;
       cmd.option(optStr, param.description, param.defaultValue as string | boolean | undefined);
-    }
-  });
-  cmd.action(async (opts) => {
-    try {
-      const argsString = process.argv.slice(3).join(' ');
-      
-      const unprovided = task.params.filter(p => !argsString.includes(`--${p.name}`));
-      
-      if (unprovided.length > 0 && process.stdout.isTTY) {
-        const answers = await inquirer.prompt(unprovided.map(p => ({
-          type: p.type === 'boolean' ? 'confirm' : 'input',
-          name: p.name,
-          message: p.description,
-          default: opts[p.name] !== undefined ? opts[p.name] : p.defaultValue
-        })));
-        Object.assign(opts, answers);
-      }
+    });
 
-      task.params.forEach(p => {
-        if (opts[p.name] && p.type === 'number') opts[p.name] = Number(opts[p.name]);
-        if (opts[p.name] && p.type === 'boolean') opts[p.name] = Boolean(opts[p.name]);
-      });
-      const config = loadConfig();
-      const env = new RuntimeEnvironment(config);
-      const result = await task.action(opts, env);
-      if (typeof result === 'object') {
-        const resObj = result as Record<string, unknown>;
-        if (resObj.txid) {
-          console.log(chalk.yellowBright('Transaction broadcasted to mempool! (Check explorer for final confirmation)'));
-        } else {
-          console.log(chalk.greenBright('Success!'));
+    cmd.action(async (opts: Record<string, unknown>) => {
+      try {
+        const providedOptions = getProvidedOptions(process.argv.slice(3));
+        const missingRequiredParams = task.params.filter((param) => {
+          return param.required !== false && !providedOptions.has(param.name);
+        });
+
+        if (missingRequiredParams.length > 0 && process.stdout.isTTY) {
+          const answers = await inquirer.prompt(
+            missingRequiredParams.map((param) => ({
+              type: param.type === 'boolean' ? 'confirm' : 'input',
+              name: param.name,
+              message: param.description,
+              default: opts[param.name] !== undefined ? opts[param.name] : param.defaultValue,
+            })),
+          );
+          Object.assign(opts, answers);
         }
-        console.dir(result, { depth: null, colors: true });
-      } else {
-        console.log(chalk.greenBright(result));
+
+        task.params.forEach((param) => {
+          opts[param.name] = coerceParamValue(param, opts[param.name]);
+          if (param.required !== false && (opts[param.name] === undefined || opts[param.name] === '')) {
+            throw new Error(`Missing required parameter '${param.name}'.`);
+          }
+        });
+
+        const config = loadConfig();
+        const env = new RuntimeEnvironment(config);
+        await env.ready;
+
+        const result = await task.action(opts, env);
+        if (typeof result === 'object' && result !== null) {
+          const resObj = result as Record<string, unknown>;
+          if (resObj.txid) {
+            console.log(
+              chalk.yellowBright('Transaction broadcasted to mempool. Check explorer for final confirmation.'),
+            );
+          } else {
+            console.log(chalk.greenBright('Success!'));
+          }
+          console.dir(result, { depth: null, colors: true });
+        } else {
+          console.log(chalk.greenBright(result));
+        }
+      } catch (err) {
+        const error = err as Error;
+        console.error(chalk.redBright('Task failed:'), error.message || error);
+        if (error && typeof error === 'object' && 'stack' in error && error.stack) {
+          console.error(chalk.gray(error.stack));
+        }
+        process.exit(1);
       }
-    } catch (err) {
-      const error = err as Error;
-      console.error(chalk.redBright('Task failed:'), error.message || error);
-      if (error && typeof error === 'object' && 'stack' in error && error.stack) {
-        console.error(chalk.gray(error.stack));
-      }
-      process.exit(1);
-    }
+    });
   });
-});
 
 program.parse(process.argv);

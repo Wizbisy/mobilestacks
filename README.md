@@ -25,17 +25,17 @@ All config lives in `mobilestacks.config.ts`:
 ```ts
 export default {
   networks: {
-    mainnet: { url: "https://api.mainnet.hiro.so", name: "mainnet" },
-    testnet: { url: "https://api.testnet.hiro.so", name: "testnet" },
+    mainnet: { url: 'https://api.mainnet.hiro.so', name: 'mainnet' },
+    testnet: { url: 'https://api.testnet.hiro.so', name: 'testnet' },
   },
-  defaultNetwork: "testnet",
+  defaultNetwork: 'testnet',
   wallet: {
     privateKey: process.env.STACKS_PRIVATE_KEY,
   },
 };
 ```
 
-Secrets can live in `.env` — they override config values automatically.
+Secrets can live in `.env`; they override config values automatically.
 
 ## CLI
 
@@ -47,7 +47,7 @@ npx mobilestacks send-stx           # send STX
 npx mobilestacks faucet-request     # get testnet tokens
 ```
 
-Missing params are prompted interactively. Run any task with `--help` for options.
+Missing required params are prompted interactively. Run any task with `--help` for options.
 
 ### Built-in Tasks
 
@@ -65,15 +65,15 @@ Missing params are prompted interactively. Run any task with `--help` for option
 
 ## Writing Tasks
 
-Drop a file in `src/tasks/` — it's auto-discovered:
+Drop a file in `src/tasks/`; it is auto-discovered:
 
 ```ts
-import { task } from "mobilestacks";
-import { z } from "zod";
+import { task } from 'mobilestacks';
+import { z } from 'zod';
 
-task("greet", "Say hello")
-  .addParam("name", "Who to greet", { schema: z.string().min(1) })
-  .setAction(async (args, env) => {
+task('greet', 'Say hello')
+  .addParam('name', 'Who to greet', { schema: z.string().min(1) })
+  .setAction((args, env) => {
     return `Hello, ${args.name}! (network: ${env.config.defaultNetwork})`;
   });
 ```
@@ -81,17 +81,19 @@ task("greet", "Say hello")
 Subtasks and workflows are also supported:
 
 ```ts
-import { subtask, runWorkflow } from "mobilestacks";
+import { subtask, runWorkflow } from 'mobilestacks';
 
-// subtask tied to a parent
-subtask("deploy:validate", "Pre-deploy check", "deploy-contract")
-  .setAction(async (args, env) => { /* ... */ });
+subtask('deploy:validate', 'Pre-deploy check', 'deploy-contract').setAction((args, env) => {
+  // validate deployment inputs
+});
 
-// run tasks in sequence
-await runWorkflow([
-  { taskName: "deploy-contract", args: { /* ... */ } },
-  { taskName: "verify-contract", args: { /* ... */ } },
-], env);
+await runWorkflow(
+  [
+    { taskName: 'deploy-contract', args: { contractName: 'sample-contract' } },
+    { taskName: 'verify-contract', args: { contractName: 'sample-contract' } },
+  ],
+  env,
+);
 ```
 
 ## Extending the Runtime
@@ -99,7 +101,7 @@ await runWorkflow([
 Add custom properties to the runtime environment, available in every task:
 
 ```ts
-import { extendEnvironment } from "mobilestacks";
+import { extendEnvironment } from 'mobilestacks';
 
 extendEnvironment((env) => {
   env.formatSTX = (micro: number) => `${(micro / 1e6).toFixed(6)} STX`;
@@ -108,24 +110,24 @@ extendEnvironment((env) => {
 
 ## Testing with Simnet
 
-Test contracts locally using the Clarinet SDK — no devnet needed:
+Test contracts locally using the Clarinet SDK. No devnet is needed:
 
 ```ts
-import { describe, it, expect, beforeAll } from "vitest";
-import { Simnet } from "mobilestacks";
-import { Cl } from "@stacks/transactions";
+import { describe, it, expect, beforeAll } from 'vitest';
+import { Simnet } from 'mobilestacks';
+import { Cl } from '@stacks/transactions';
 
-describe("My Contract", () => {
+describe('My Contract', () => {
   let simnet: Simnet;
 
   beforeAll(async () => {
     simnet = await Simnet.init();
   });
 
-  it("calls hello-world", () => {
+  it('calls hello-world', () => {
     const deployer = simnet.getDeployer();
-    const { result } = simnet.callPublic("sample-contract", "hello-world", [], deployer);
-    expect(result).toStrictEqual(Cl.ok(Cl.stringAscii("Hello, Stacks!")));
+    const { result } = simnet.callPublic('sample-contract', 'hello-world', [], deployer);
+    expect(result).toStrictEqual(Cl.ok(Cl.stringAscii('Hello, Stacks!')));
   });
 });
 ```
@@ -149,22 +151,21 @@ npm test
 Use mobilestacks as a library:
 
 ```ts
-import { task, subtask, extendEnvironment, Simnet, RuntimeEnvironment } from "mobilestacks";
+import { task, subtask, extendEnvironment, Simnet, RuntimeEnvironment } from 'mobilestacks';
 ```
 
 ## Project Structure
 
-```
-├── src/
-│   ├── cli/           # CLI entry point + init scaffolding
-│   ├── core/          # DSL, Simnet, RuntimeEnvironment, task registry
-│   ├── tasks/         # Built-in tasks (auto-loaded)
-│   ├── types/         # Zod schemas + TypeScript types
-│   └── index.ts       # Public API
-├── tests/             # Vitest test files
-├── contracts/         # Clarity contracts
-├── Clarinet.toml      # Clarinet project manifest
-└── mobilestacks.config.ts
+```text
+src/
+  cli/           CLI entry point and init scaffolding
+  core/          DSL, Simnet, RuntimeEnvironment, task registry
+  tasks/         Built-in tasks
+  types/         Zod schemas and TypeScript types
+  index.ts       Public API
+tests/           Vitest test files
+contracts/       Clarity contracts
+Clarinet.toml    Clarinet project manifest
 ```
 
 ## Contributing
@@ -173,15 +174,15 @@ import { task, subtask, extendEnvironment, Simnet, RuntimeEnvironment } from "mo
 git clone https://github.com/Wizbisy/mobilestacks.git
 cd mobilestacks
 npm install
-npm run setup:simnet   # generate test accounts
-npm test               # run all tests
+npm run setup:simnet
+npm test
 ```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ## Security
 
-Private keys and seed phrases are never logged. Output is scanned for secrets and masked automatically. Keep your `.env` out of version control.
+Private keys and seed phrases are never logged. Output is scanned for sensitive fields and masked automatically when tasks return transaction IDs. Keep your `.env` out of version control.
 
 ## License
 

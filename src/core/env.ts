@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-dotenv.config();
+dotenv.config({ quiet: true });
 
 export const env = {
   privateKey: process.env.STACKS_PRIVATE_KEY,

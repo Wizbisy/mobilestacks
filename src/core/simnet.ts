@@ -1,7 +1,6 @@
 import { initSimnet } from '@hirosystems/clarinet-sdk';
 import { ClarityValue } from '@stacks/transactions';
 
-
 type SimnetInstance = Awaited<ReturnType<typeof initSimnet>>;
 
 export class Simnet {

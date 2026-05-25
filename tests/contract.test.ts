@@ -12,12 +12,7 @@ describe('Sample Contract (Simnet)', () => {
   });
 
   it('should call hello-world public function', () => {
-    const result = simnet.callPublic(
-      'sample-contract',
-      'hello-world',
-      [],
-      deployer
-    );
+    const result = simnet.callPublic('sample-contract', 'hello-world', [], deployer);
     expect(result.result).toStrictEqual(Cl.ok(Cl.stringAscii('Hello, Stacks!')));
   });
 });

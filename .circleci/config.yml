@@ -1,0 +1,56 @@
+version: 2.1
+
+jobs:
+  publish:
+    docker:
+      - image: cimg/node:18.20
+    working_directory: ~/mobilestacks
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - npm-v1-{{ checksum "package-lock.json" }}
+            - npm-v1-
+      - run:
+          name: Install dependencies
+          command: npm ci
+      - save_cache:
+          key: npm-v1-{{ checksum "package-lock.json" }}
+          paths:
+            - ~/.npm
+      - run:
+          name: Generate Simnet test accounts
+          command: npm run setup:simnet
+      - run:
+          name: Lint
+          command: npm run lint
+      - run:
+          name: Test
+          command: npm test
+      - run:
+          name: Build
+          command: npm run build
+      - run:
+          name: Publish to npm
+          command: |
+            if [ -z "$NPM_TOKEN" ]; then
+              echo "NPM_TOKEN is not set in CircleCI project environment variables."
+              exit 1
+            fi
+
+            echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+
+            PACKAGE_NAME="$(node -p "require('./package.json').name")"
+            PACKAGE_VERSION="$(node -p "require('./package.json').version")"
+
+            if npm view "${PACKAGE_NAME}@${PACKAGE_VERSION}" version >/dev/null 2>&1; then
+              echo "${PACKAGE_NAME}@${PACKAGE_VERSION} is already published. Skipping npm publish."
+              exit 0
+            fi
+
+            npm publish
+
+workflows:
+  publish_on_push:
+    jobs:
+      - publish

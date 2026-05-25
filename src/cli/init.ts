@@ -2,9 +2,24 @@ import fs from 'fs';
 import path from 'path';
 import inquirer from 'inquirer';
 
-export async function runInit() {
-  console.log('Welcome to mobilestacks project initialization!');
-  const answers = await inquirer.prompt([
+type InitAnswers = {
+  projectName: string;
+  mainnetUrl: string;
+  testnetUrl: string;
+  derivationPath: string;
+};
+
+function writeFileIfMissing(filePath: string, content: string, options?: fs.WriteFileOptions): void {
+  if (fs.existsSync(filePath)) {
+    throw new Error(`Refusing to overwrite existing file: ${filePath}`);
+  }
+
+  fs.writeFileSync(filePath, content, options);
+}
+
+export async function runInit(): Promise<void> {
+  console.log('Welcome to mobilestacks project initialization.');
+  const answers = await inquirer.prompt<InitAnswers>([
     {
       type: 'input',
       name: 'projectName',
@@ -34,9 +49,14 @@ export async function runInit() {
   const config = `import 'dotenv/config';
 
 export default {
+  projectName: ${JSON.stringify(answers.projectName)},
   networks: {
-    mainnet: { url: process.env.STACKS_MAINNET_URL || ${JSON.stringify(answers.mainnetUrl)}, name: 'mainnet' },
-    testnet: { url: process.env.STACKS_TESTNET_URL || ${JSON.stringify(answers.testnetUrl)}, name: 'testnet' },
+    mainnet: { url: process.env.STACKS_MAINNET_URL || ${JSON.stringify(
+      answers.mainnetUrl,
+    )}, name: 'mainnet' },
+    testnet: { url: process.env.STACKS_TESTNET_URL || ${JSON.stringify(
+      answers.testnetUrl,
+    )}, name: 'testnet' },
   },
   defaultNetwork: 'testnet',
   wallet: {
@@ -47,36 +67,53 @@ export default {
 };
 `;
 
-  fs.writeFileSync(path.join(process.cwd(), 'mobilestacks.config.ts'), config);
-  const envPath = path.join(process.cwd(), '.env');
-  if (!fs.existsSync(envPath)) {
-    const envContent = `# Mobilestacks secrets — NEVER commit this file!\nMOBILESTACKS_PRIVATE_KEY=\nMOBILESTACKS_SEED_PHRASE=\nSTACKS_MAINNET_URL=${answers.mainnetUrl}\nSTACKS_TESTNET_URL=${answers.testnetUrl}\n`;
-    fs.writeFileSync(envPath, envContent, { mode: 0o600 }); 
+  const configPath = path.join(process.cwd(), 'mobilestacks.config.ts');
+  const contractsDir = path.join(process.cwd(), 'contracts');
+  const sampleContractPath = path.join(contractsDir, 'sample-contract.clar');
+  const tasksDir = path.join(process.cwd(), 'src', 'tasks');
+  const exampleTaskPath = path.join(tasksDir, 'example-task.ts');
+  const existingTargets = [configPath, sampleContractPath, exampleTaskPath].filter((target) =>
+    fs.existsSync(target),
+  );
+
+  if (existingTargets.length > 0) {
+    throw new Error(`Refusing to overwrite existing files:\n${existingTargets.join('\n')}`);
   }
 
-  const contractsDir = path.join(process.cwd(), 'contracts');
+  writeFileIfMissing(configPath, config);
+
+  const envPath = path.join(process.cwd(), '.env');
+  if (!fs.existsSync(envPath)) {
+    const envContent = `# Mobilestacks secrets - NEVER commit this file.
+MOBILESTACKS_PRIVATE_KEY=
+MOBILESTACKS_SEED_PHRASE=
+STACKS_MAINNET_URL=${answers.mainnetUrl}
+STACKS_TESTNET_URL=${answers.testnetUrl}
+`;
+    fs.writeFileSync(envPath, envContent, { mode: 0o600 });
+  }
+
   if (!fs.existsSync(contractsDir)) fs.mkdirSync(contractsDir);
-  fs.writeFileSync(
-    path.join(contractsDir, 'sample-contract.clar'),
+  writeFileIfMissing(
+    sampleContractPath,
     '(define-public (hello-world)\n  (ok "Hello, Stacks!"))\n',
   );
 
-  const tasksDir = path.join(process.cwd(), 'src', 'tasks');
   if (!fs.existsSync(tasksDir)) fs.mkdirSync(tasksDir, { recursive: true });
-  fs.writeFileSync(
-    path.join(tasksDir, 'example-task.ts'),
-    "import { task } from 'mobilestacks';\n\ntask('example', 'An example user task for onboarding')\n  .addParam('name', 'Your name', { type: 'string', required: false, defaultValue: 'World' })\n  .setAction(async (args: Record<string, string>) => {\n    return `Hello, ${args.name}! Welcome to mobilestacks.`;\n  });\n",
+  writeFileIfMissing(
+    exampleTaskPath,
+    "import { task } from 'mobilestacks';\n\ntask('example', 'An example user task for onboarding')\n  .addParam('name', 'Your name', { type: 'string', required: false, defaultValue: 'World' })\n  .setAction((args) => {\n    return `Hello, ${args.name}! Welcome to mobilestacks.`;\n  });\n",
   );
 
-  console.log('\n✅ Created:');
-  console.log('   • mobilestacks.config.ts  (reads secrets from env vars)');
-  console.log('   • .env                    (store your secrets here)');
-  console.log('   • contracts/sample-contract.clar');
-  console.log('   • src/tasks/example-task.ts');
+  console.log('\nCreated:');
+  console.log('   - mobilestacks.config.ts  (reads secrets from env vars)');
+  console.log('   - .env                    (store your secrets here)');
+  console.log('   - contracts/sample-contract.clar');
+  console.log('   - src/tasks/example-task.ts');
 
-  console.log('\n⚠️  SECURITY WARNING:');
-  console.log('   Your wallet secrets belong in the .env file, NOT in source code.');
-  console.log('   • .env is already listed in .gitignore — never remove that entry.');
-  console.log('   • Set MOBILESTACKS_PRIVATE_KEY or MOBILESTACKS_SEED_PHRASE in .env');
-  console.log('   • See .env.example for the full list of supported variables.\n');
+  console.log('\nSECURITY WARNING:');
+  console.log('   Your wallet secrets belong in the .env file, not in source code.');
+  console.log('   - .env is already listed in .gitignore; never remove that entry.');
+  console.log('   - Set MOBILESTACKS_PRIVATE_KEY or MOBILESTACKS_SEED_PHRASE in .env.');
+  console.log('   - See .env.example for the full list of supported variables.\n');
 }

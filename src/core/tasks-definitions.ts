@@ -2,6 +2,11 @@ import { ZodSchema } from 'zod';
 import { RuntimeEnvironment } from './runtime-environment';
 
 export type TaskParamType = 'string' | 'number' | 'boolean';
+export type TaskAction = (
+  args: Record<string, unknown>,
+  env: RuntimeEnvironment,
+) => unknown | Promise<unknown>;
+
 export interface TaskParam {
   name: string;
   description: string;
@@ -15,6 +20,7 @@ export interface TaskDefinition {
   name: string;
   description: string;
   params: TaskParam[];
+  parent?: string;
   action: (args: Record<string, unknown>, env: RuntimeEnvironment) => Promise<unknown>;
 }
 
@@ -31,7 +37,13 @@ class TaskDefinitions {
     return TaskDefinitions._instance;
   }
 
-  public addTask(task: TaskDefinition) {
+  public addTask(task: TaskDefinition): void {
+    const existingIndex = this._tasks.findIndex((registeredTask) => registeredTask.name === task.name);
+    if (existingIndex >= 0) {
+      this._tasks[existingIndex] = task;
+      return;
+    }
+
     this._tasks.push(task);
   }
 
@@ -41,6 +53,10 @@ class TaskDefinitions {
 
   public getAllTasks(): TaskDefinition[] {
     return this._tasks;
+  }
+
+  public clear(): void {
+    this._tasks = [];
   }
 }
 
