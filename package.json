@@ -17,7 +17,7 @@
     "prebuild": "node -e \"const fs=require('fs'); if(fs.existsSync('./dist')) fs.rmSync('./dist', {recursive:true, force:true});\"",
     "build": "tsc",
     "lint": "eslint src --ext .ts",
-    "test": "vitest run",
+    "test": "vitest run --config vitest.config.mts",
     "setup:simnet": "node scripts/setup-simnet.mjs",
     "prepublishOnly": "npm run build && npm test"
   },
