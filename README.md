@@ -1,6 +1,9 @@
 # mobilestacks
 
 [![npm version](https://badge.fury.io/js/mobilestacks.svg)](https://badge.fury.io/js/mobilestacks)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/Wizbisy/mobilestacks/tree/main.svg?style=shield)](https://dl.circleci.com/status-badge/redirect/gh/Wizbisy/mobilestacks/tree/main)
+[![npm downloads](https://img.shields.io/npm/dm/mobilestacks.svg)](https://www.npmjs.com/package/mobilestacks)
+[![Node.js Version](https://img.shields.io/node/v/mobilestacks.svg)](https://nodejs.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A Hardhat-style development framework for Stacks. Write, test, and deploy Clarity smart contracts with a task-based CLI, local Simnet testing, and a pluggable runtime.
