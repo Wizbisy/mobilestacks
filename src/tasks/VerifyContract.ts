@@ -45,3 +45,4 @@ task('verifycontract', 'Verify a deployed Clarity contract on the Stacks explore
       explorer: getExplorerTxUrl(fullContractId, networkName),
     };
   });
+  
