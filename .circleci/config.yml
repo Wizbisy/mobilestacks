@@ -53,4 +53,7 @@ jobs:
 workflows:
   publish_on_push:
     jobs:
-      - publish
+      - publish:
+          filters:
+            branches:
+              only: main
