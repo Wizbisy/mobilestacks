@@ -1,6 +1,6 @@
-import { TaskAction, TaskDefinitions, TaskDefinition, TaskParam, TaskParamType } from './tasks-definitions';
+import { TaskAction, TaskDefinitions, TaskDefinition, TaskParam, TaskParamType } from './TasksDefinitions';
 import { ZodError, ZodSchema } from 'zod';
-import { RuntimeEnvironment } from './runtime-environment';
+import { RuntimeEnvironment } from './RuntimeEnvironment';
 import { extendEnvironment } from './extender';
 
 type TaskParamOptions = {
@@ -26,7 +26,7 @@ function task(name: string, description: string, parent?: string) {
         name: paramName,
         description: paramDesc,
         type: options?.type || 'string',
-        required: options?.required !== false, // default true
+        required: options?.required !== false,
         defaultValue: options?.defaultValue,
         schema: options?.schema,
       });
