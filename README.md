@@ -1,5 +1,8 @@
 # mobilestacks
 
+[![npm version](https://badge.fury.io/js/mobilestacks.svg)](https://badge.fury.io/js/mobilestacks)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A Hardhat-style development framework for Stacks. Write, test, and deploy Clarity smart contracts with a task-based CLI, local Simnet testing, and a pluggable runtime.
 
 ## Install
@@ -41,10 +44,10 @@ Secrets can live in `.env`; they override config values automatically.
 
 ```bash
 npx mobilestacks                    # list all tasks
-npx mobilestacks deploy-contract    # deploy a contract
-npx mobilestacks get-balance        # check STX balance
-npx mobilestacks send-stx           # send STX
-npx mobilestacks faucet-request     # get testnet tokens
+npx mobilestacks deploycontract     # deploy a contract
+npx mobilestacks getbalance         # check STX balance
+npx mobilestacks sendstx            # send STX
+npx mobilestacks faucetrequest      # get testnet tokens
 ```
 
 Missing required params are prompted interactively. Run any task with `--help` for options.
@@ -53,15 +56,15 @@ Missing required params are prompted interactively. Run any task with `--help` f
 
 | Task | What it does |
 | ---- | ------------ |
-| `deploy-contract` | Deploy a `.clar` file to mainnet/testnet |
-| `send-stx` | Transfer STX to an address |
-| `get-balance` | Check STX balance for any address |
-| `faucet-request` | Request testnet STX from the faucet |
-| `list-accounts` | List derived wallet accounts |
-| `get-tx-history` | Fetch recent transactions |
-| `call-contract-function` | Call a read-only contract function |
-| `get-contract-info` | Fetch deployed contract metadata |
-| `verify-contract` | Diff on-chain source against a local file |
+| `deploycontract` | Deploy a `.clar` file to mainnet/testnet |
+| `sendstx` | Transfer STX to an address |
+| `getbalance` | Check STX balance for any address |
+| `faucetrequest` | Request testnet STX from the faucet |
+| `listaccounts` | List derived wallet accounts |
+| `gettxhistory` | Fetch recent transactions |
+| `callcontractfunction` | Call a read-only contract function |
+| `getcontractinfo` | Fetch deployed contract metadata |
+| `verifycontract` | Diff on-chain source against a local file |
 
 ## Writing Tasks
 
@@ -83,14 +86,14 @@ Subtasks and workflows are also supported:
 ```ts
 import { subtask, runWorkflow } from 'mobilestacks';
 
-subtask('deploy:validate', 'Pre-deploy check', 'deploy-contract').setAction((args, env) => {
+subtask('deploy:validate', 'Pre-deploy check', 'deploycontract').setAction((args, env) => {
   // validate deployment inputs
 });
 
 await runWorkflow(
   [
-    { taskName: 'deploy-contract', args: { contractName: 'sample-contract' } },
-    { taskName: 'verify-contract', args: { contractName: 'sample-contract' } },
+    { taskName: 'deploycontract', args: { contractName: 'sample-contract' } },
+    { taskName: 'verifycontract', args: { contractName: 'sample-contract' } },
   ],
   env,
 );

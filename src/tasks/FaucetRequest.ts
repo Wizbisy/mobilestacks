@@ -2,7 +2,7 @@ import { task } from '../core/dsl';
 import fetch from 'node-fetch';
 import { getNetworkUrl, getResponseJson } from './utils';
 
-task('faucet-request', 'Request STX from the testnet faucet')
+task('faucetrequest', 'Request STX from the testnet faucet')
   .addParam('address', 'STX address to fund', { type: 'string', required: true })
   .setAction(async (args, env) => {
     if (env.config.defaultNetwork !== 'testnet') {

@@ -13,7 +13,7 @@ type ContractInfoResponse = {
   source_code?: string;
 };
 
-task('verify-contract', 'Verify a deployed Clarity contract on the Stacks explorer')
+task('verifycontract', 'Verify a deployed Clarity contract on the Stacks explorer')
   .addParam('contractAddress', 'Deployed contract address (STX...)', { type: 'string', required: true })
   .addParam('contractName', 'Contract name', { type: 'string', required: true })
   .addParam('source', 'Path to contract source file', { type: 'string', required: true })

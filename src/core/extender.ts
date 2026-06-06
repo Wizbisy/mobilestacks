@@ -1,4 +1,4 @@
-import { RuntimeEnvironment } from './runtime-environment';
+import { RuntimeEnvironment } from './RuntimeEnvironment';
 
 export type ExtensionFunc = (env: RuntimeEnvironment) => void;
 

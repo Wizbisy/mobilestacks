@@ -67,7 +67,7 @@ function parseArgToCV(arg: string): ClarityValue {
   throw new Error(`Unsupported Clarity argument: ${arg}`);
 }
 
-task('execute-contract', 'Execute a state-modifying function on a Clarity contract')
+task('executecontract', 'Execute a state-modifying function on a Clarity contract')
   .addParam('contractAddress', 'Deployed contract address (STX...)', { type: 'string', required: true })
   .addParam('contractName', 'Contract name', { type: 'string', required: true })
   .addParam('functionName', 'Function name', { type: 'string', required: true })

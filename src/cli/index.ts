@@ -4,9 +4,9 @@ import { Command } from 'commander';
 import fs from 'fs';
 import inquirer from 'inquirer';
 import path from 'path';
-import { loadConfig } from '../config/config-loading';
-import { RuntimeEnvironment } from '../core/runtime-environment';
-import { TaskDefinitions, TaskParam } from '../core/tasks-definitions';
+import { loadConfig } from '../config/ConfigLoading';
+import { RuntimeEnvironment } from '../core/RuntimeEnvironment';
+import { TaskDefinitions, TaskParam } from '../core/TasksDefinitions';
 import { runInit } from './init';
 
 const tasksDir = path.join(__dirname, '../tasks');
@@ -96,7 +96,7 @@ program.action(() => {
   console.log(chalk.white('\nExample:'));
   console.log(
     `  ${chalk.green(
-      'mobilestacks deploy-contract --contractName my-contract --file ./contracts/my-contract.clar --network testnet',
+      'mobilestacks deploycontract --contractName my-contract --file ./contracts/my-contract.clar --network testnet',
     )}`,
   );
   console.log(chalk.white('\nDocs: ') + chalk.underline('https://github.com/Wizbisy/mobilestacks#readme'));

@@ -8,7 +8,7 @@ type WalletAccount = {
   stxPrivateKey: string;
 };
 
-task('list-accounts', 'List all accounts derived from the configured seed phrase')
+task('listaccounts', 'List all accounts derived from the configured seed phrase')
   .addParam('network', 'Network (mainnet|testnet)', {
     type: 'string',
     required: false,

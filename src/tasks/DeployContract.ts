@@ -11,7 +11,7 @@ import {
   warnIfSensitiveOutput,
 } from './utils';
 
-task('deploy-contract', 'Deploy a Clarity smart contract to Stacks blockchain')
+task('deploycontract', 'Deploy a Clarity smart contract to Stacks blockchain')
   .addParam('contractName', 'Name of the contract', { type: 'string', required: true })
   .addParam('file', 'Path to Clarity contract file', { type: 'string', required: true })
   .addParam('network', 'Network to deploy to (mainnet|testnet)', {

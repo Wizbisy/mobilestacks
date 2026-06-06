@@ -18,7 +18,7 @@
     "build": "tsc",
     "lint": "eslint src --ext .ts",
     "test": "vitest run --config vitest.config.mts",
-    "setup:simnet": "node scripts/setup-simnet.mjs",
+    "setup:simnet": "node scripts/SetupSimnet.mjs",
     "prepublishOnly": "npm run build && npm test"
   },
   "keywords": [

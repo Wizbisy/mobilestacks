@@ -3,7 +3,7 @@ import fetch from 'node-fetch';
 import { hexToCV, cvToJSON } from '@stacks/transactions';
 import { getNetworkUrl, getResponseJson, getSupportedNetworkName } from './utils';
 
-task('call-contract-function', 'Call a read-only function on a deployed Clarity contract')
+task('callcontractfunction', 'Call a read-only function on a deployed Clarity contract')
   .addParam('contractAddress', 'Deployed contract address (STX...)', { type: 'string', required: true })
   .addParam('contractName', 'Contract name', { type: 'string', required: true })
   .addParam('functionName', 'Function name', { type: 'string', required: true })

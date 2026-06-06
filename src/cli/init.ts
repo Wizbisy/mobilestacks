@@ -71,7 +71,7 @@ export default {
   const contractsDir = path.join(process.cwd(), 'contracts');
   const sampleContractPath = path.join(contractsDir, 'sample-contract.clar');
   const tasksDir = path.join(process.cwd(), 'src', 'tasks');
-  const exampleTaskPath = path.join(tasksDir, 'example-task.ts');
+  const exampleTaskPath = path.join(tasksDir, 'ExampleTask.ts');
   const existingTargets = [configPath, sampleContractPath, exampleTaskPath].filter((target) =>
     fs.existsSync(target),
   );
@@ -109,7 +109,7 @@ STACKS_TESTNET_URL=${answers.testnetUrl}
   console.log('   - mobilestacks.config.ts  (reads secrets from env vars)');
   console.log('   - .env                    (store your secrets here)');
   console.log('   - contracts/sample-contract.clar');
-  console.log('   - src/tasks/example-task.ts');
+  console.log('   - src/tasks/ExampleTask.ts');
 
   console.log('\nSECURITY WARNING:');
   console.log('   Your wallet secrets belong in the .env file, not in source code.');

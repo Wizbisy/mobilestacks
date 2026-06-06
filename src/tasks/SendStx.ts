@@ -9,7 +9,7 @@ import {
   warnIfSensitiveOutput,
 } from './utils';
 
-task('send-stx', 'Sends STX to an address')
+task('sendstx', 'Sends STX to an address')
   .addParam('to', 'Recipient STX address', { type: 'string', required: true })
   .addParam('amount', 'Amount in STX (e.g. 10.5)', { type: 'number', required: true })
   .addParam('memo', 'Optional memo', { type: 'string', required: false, defaultValue: '' })

@@ -2,7 +2,7 @@ import { task } from '../core/dsl';
 import fetch from 'node-fetch';
 import { getNetworkUrl, getResponseJson, getSupportedNetworkName } from './utils';
 
-task('get-contract-info', 'Get contract attributes and details from Stacks blockchain')
+task('getcontractinfo', 'Get contract attributes and details from Stacks blockchain')
   .addParam('contractAddress', 'Deployed contract address (STX...)', { type: 'string', required: true })
   .addParam('contractName', 'Contract name', { type: 'string', required: true })
   .addParam('network', 'Network (mainnet|testnet)', {

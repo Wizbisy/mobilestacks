@@ -19,7 +19,7 @@ type TransactionHistoryResponse = {
   }>;
 };
 
-task('get-tx-history', 'Get transaction history for the configured wallet address')
+task('gettxhistory', 'Get transaction history for the configured wallet address')
   .addParam('limit', 'Number of transactions to fetch', { type: 'number', required: false, defaultValue: 10 })
   .addParam('network', 'Network (mainnet|testnet)', {
     type: 'string',

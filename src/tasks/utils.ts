@@ -1,7 +1,7 @@
 import { createNetwork, StacksNetwork } from '@stacks/network';
 import { getAddressFromPrivateKey } from '@stacks/transactions';
 import { MobilestacksConfig } from '../types/config';
-import { RuntimeEnvironment } from '../core/runtime-environment';
+import { RuntimeEnvironment } from '../core/RuntimeEnvironment';
 
 export type SupportedNetworkName = 'mainnet' | 'testnet';
 

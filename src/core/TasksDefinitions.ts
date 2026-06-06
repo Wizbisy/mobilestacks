@@ -1,5 +1,5 @@
 import { ZodSchema } from 'zod';
-import { RuntimeEnvironment } from './runtime-environment';
+import { RuntimeEnvironment } from './RuntimeEnvironment';
 
 export type TaskParamType = 'string' | 'number' | 'boolean';
 export type TaskAction = (

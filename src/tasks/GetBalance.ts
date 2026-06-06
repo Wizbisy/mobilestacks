@@ -16,7 +16,7 @@ type BalanceResponse = {
   };
 };
 
-task('get-balance', 'Get STX balance for the configured wallet address or a provided address')
+task('getbalance', 'Get STX balance for the configured wallet address or a provided address')
   .addParam('address', 'STX address to check (optional, defaults to wallet main address)', {
     type: 'string',
     required: false,

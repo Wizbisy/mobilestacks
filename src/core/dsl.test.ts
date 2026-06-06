@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { task } from './dsl';
-import { TaskDefinitions } from './tasks-definitions';
+import { TaskDefinitions } from './TasksDefinitions';
 import { z } from 'zod';
-import { RuntimeEnvironment } from './runtime-environment';
+import { RuntimeEnvironment } from './RuntimeEnvironment';
 import { extendEnvironment, Extender } from './extender';
 
 describe('DSL', () => {
@@ -11,24 +11,24 @@ describe('DSL', () => {
   });
 
   it('should register a task with generic parameters', () => {
-    task('test-task', 'A test task')
+    task('testtask', 'A test task')
       .addParam('p1', 'param 1')
       .setAction(() => 'done');
 
-    const def = TaskDefinitions.getInstance().getTask('test-task');
+    const def = TaskDefinitions.getInstance().getTask('testtask');
     expect(def).toBeDefined();
-    expect(def?.name).toBe('test-task');
+    expect(def?.name).toBe('testtask');
     expect(def?.params.length).toBe(1);
   });
 
   it('should validate Zod schema', async () => {
-    task('zod-task', 'Task with validation')
+    task('zodtask', 'Task with validation')
       .addParam('age', 'Age param', { schema: z.number().min(18) })
       .setAction(async (args) => {
         return args.age;
       });
     
-    const def = TaskDefinitions.getInstance().getTask('zod-task');
+    const def = TaskDefinitions.getInstance().getTask('zodtask');
     expect(def).toBeDefined();
 
     const env = {} as RuntimeEnvironment;
