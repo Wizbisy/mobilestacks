@@ -102,7 +102,7 @@ STACKS_TESTNET_URL=${answers.testnetUrl}
   if (!fs.existsSync(tasksDir)) fs.mkdirSync(tasksDir, { recursive: true });
   writeFileIfMissing(
     exampleTaskPath,
-    "import { task } from 'mobilestacks';\n\ntask('example', 'An example user task for onboarding')\n  .addParam('name', 'Your name', { type: 'string', required: false, defaultValue: 'World' })\n  .setAction((args) => {\n    return `Hello, ${args.name}! Welcome to mobilestacks.`;\n  });\n",
+    "import { task } from 'mobilestacks';\n\ntask('example', 'An example user task for onboarding')\n  .addParam('name', 'Your name', { type: 'string', required: false, defaultValue: 'World' })\n  .setAction((args: any) => {\n    return `Hello, ${args.name}! Welcome to mobilestacks.`;\n  });\n",
   );
 
   console.log('\nCreated:');
