@@ -67,6 +67,7 @@ Missing required params are prompted interactively. Run any task with `--help` f
 | `callcontractfunction` | Call a read-only contract function |
 | `getcontractinfo` | Fetch deployed contract metadata |
 | `verifycontract` | Diff on-chain source against a local file |
+| `setupsimnet` | Generate local Simnet/Devnet configuration and test accounts |
 
 ## Writing Tasks
 
@@ -115,6 +116,8 @@ extendEnvironment((env) => {
 
 ## Testing with Simnet
 
+**Simnet** (simulated network) is a local, offline simulation of the Stacks provided by Clarinet. It is used to test smart contracts rapidly and deterministically without needing to run a full node, use a public testnet, or wait for real block times.
+
 Test contracts locally using the Clarinet SDK. No devnet is needed:
 
 ```ts
@@ -139,10 +142,10 @@ describe('My Contract', () => {
 
 ### Setup
 
-Contract tests need a `Clarinet.toml` and test accounts. Run the setup script once:
+Contract tests need a `Clarinet.toml` and test accounts. Run the setup task once:
 
 ```bash
-npm run setup:simnet
+npx mobilestacks setupsimnet
 ```
 
 Then run tests:
