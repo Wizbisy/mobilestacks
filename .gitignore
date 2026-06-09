@@ -14,6 +14,7 @@ yarn-error.log*
 
 # Build
 *.tsbuildinfo
+ztest/
 
 # OS
 .DS_Store
